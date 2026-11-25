@@ -251,10 +251,10 @@ impl Connection {
     ///
     /// Several variants of `HdbError` can occur.
     pub async fn spawn(&self) -> HdbResult<Self> {
-        let am_conn_core = self.am_conn_core.lock_async().await;
+        let my_am_conn_core = self.am_conn_core.lock_async().await;
         let (am_conn_core, a_client_dead) = AmConnCore::try_new_async(
-            am_conn_core.connect_params().clone(),
-            am_conn_core.configuration(),
+            my_am_conn_core.connect_params().clone(),
+            my_am_conn_core.configuration(),
         )
         .await?;
         Ok(Self {
