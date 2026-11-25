@@ -659,7 +659,9 @@ impl<'a> ConnectionCore {
     fn die(&mut self) {
         self.tcp_client.die();
         #[cfg(feature = "async")]
-        self.a_client_dead.store(true, Ordering::Relaxed);
+        // Release so that a thread observing the flag via an Acquire load in
+        // `Connection::has_broken()` reliably sees the store on weakly-ordered targets (e.g. Arm).
+        self.a_client_dead.store(true, Ordering::Release);
     }
 
     #[cfg(feature = "sync")]

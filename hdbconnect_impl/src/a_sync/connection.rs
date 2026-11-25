@@ -725,6 +725,8 @@ impl Connection {
     /// need a definitive, up-to-date answer.
     #[must_use]
     pub fn has_broken(&self) -> bool {
-        self.a_client_dead.load(Ordering::Relaxed)
+        // Acquire to pair with the Release store in `ConnectionCore::die()`, so a break set on
+        // another thread is reliably visible here on weakly-ordered targets (e.g. Arm).
+        self.a_client_dead.load(Ordering::Acquire)
     }
 }
